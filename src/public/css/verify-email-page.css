@@ -1,0 +1,45 @@
+.header {
+    background: #000;
+}
+
+.header__inner {
+    max-width: 1400px;
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header__logo {
+    width: 370px;
+    height: 36px;
+}
+
+.content {
+    max-width: 1400px;
+    margin: 200px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.content__text {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.content__info {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 200px;
+    margin-bottom: 10px;
+}
+
+.content__send {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #0073CC;
+    cursor: pointer;
+}
