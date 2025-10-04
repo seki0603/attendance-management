@@ -43,4 +43,17 @@ class AuthController extends Controller
 
         return redirect()->route('verification.notice');
     }
+
+    public function logout(Request $request)
+    {
+
+        Auth::logout();
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return redirect()->route('login');
+    }
 }

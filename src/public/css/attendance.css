@@ -1,0 +1,60 @@
+.form {
+    max-width: 1400px;
+    margin: 200px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.form__status {
+    width: 100px;
+    margin: 30px auto;
+    font-size: 18px;
+    font-weight: bold;
+    color: #696969;
+    background: #C8C8C8;
+    padding: 7px 0;
+    border-radius: 30px;
+}
+
+.form__date {
+    font-size: 40px;
+    font-weight: 400;
+    margin: 0;
+}
+
+.form__time {
+    font-size: 80px;
+    margin: 10px;
+}
+
+.form__attendance-button {
+    width: 200px;
+    height: 75px;
+    margin: 80px 40px;
+    background: #000;
+    color: #fff;
+    font-size: 32px;
+    font-weight: bold;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.form__break-button {
+    width: 200px;
+    height: 75px;
+    margin: 80px 40px;
+    background: #fff;
+    color: #000;
+    font-size: 32px;
+    font-weight: bold;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.form__message {
+    font-size: 26px;
+    font-weight: bold;
+    margin-top: 80px;
+}
