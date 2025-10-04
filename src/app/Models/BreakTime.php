@@ -17,6 +17,11 @@ class BreakTime extends Model
         'break_end',
     ];
 
+    protected $casts = [
+        'break_start' => 'datetime',
+        'break_end'   => 'datetime',
+    ];
+
     // リレーション
     public function attendance()
     {

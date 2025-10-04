@@ -10,7 +10,7 @@
     <p class="form__status">{{ $status }}</p>
     <h2 class="form__date">
         {{ $now->format('Y年m月d日') }}
-        {{ $attendance ? $attendance->jp_weekday : '(' . ['日','月','火','水','木','金','土'][$now->dayOfWeek] . ')' }}
+        {{ optional($attendance)->jp_weekday ?? '（' . ['日','月','火','水','木','金','土'][$now->dayOfWeek] . '）' }}
     </h2>
     <h1 class="form__time">{{ $now->format('H:i') }}</h1>
 

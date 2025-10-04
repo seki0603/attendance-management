@@ -19,6 +19,13 @@ class Attendance extends Model
         'total_work_time'
     ];
 
+    protected $casts = [
+        'work_date' => 'date',
+        'clock_in' => 'datetime',
+        'clock_out' => 'datetime',
+    ];
+
+
     // リレーション
     public function user()
     {
