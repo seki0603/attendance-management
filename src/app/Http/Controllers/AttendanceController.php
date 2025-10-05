@@ -67,6 +67,18 @@ class AttendanceController extends Controller
             if ($break) {
                 $break->update(['break_end' => now()]);
             }
+
+            // 休憩のたびに合計を更新
+            $totalBreak = BreakTime::where('attendance_id', $attendance->id)
+                ->whereNotNull('break_start')
+                ->whereNotNull('break_end')
+                ->get()
+                ->sum(fn($b) => $b->break_start->diffInMinutes($b->break_end));
+
+            $attendance->update([
+                'total_break_time' => $totalBreak,
+            ]);
+
             session(['on_break' => false]);
         }
 
@@ -78,15 +90,8 @@ class AttendanceController extends Controller
                 ? $attendance->clock_in->diffInMinutes($attendance->clock_out)
                 : null;
 
-            $totalBreak = BreakTime::where('attendance_id', $attendance->id)
-                ->whereNotNull('break_start')
-                ->whereNotNull('break_end')
-                ->get()
-                ->sum(fn($b) => $b->break_start->diffInMinutes($b->break_end));
-
             $attendance->update([
-                'total_break_time' => $totalBreak,
-                'total_work_time'  => $totalWork ? max($totalWork - $totalBreak, 0) : null,
+                'total_work_time'  => $totalWork ? max($totalWork - $attendance->total_break_time, 0) : null,
             ]);
         }
 
@@ -107,8 +112,8 @@ class AttendanceController extends Controller
         $attendances = Attendance::where('user_id', $user->id)
             ->whereBetween('work_date', [$start->toDateString(), $end->toDateString()])
             ->get()
+            ->each->refresh()
             ->keyBy(fn($item) => Carbon::parse($item->work_date)->format('Y-m-d'));
-
 
         $records = collect();
         $day = $start->copy();

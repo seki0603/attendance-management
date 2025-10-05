@@ -25,7 +25,6 @@ class Attendance extends Model
         'clock_out' => 'datetime',
     ];
 
-
     // リレーション
     public function user()
     {
