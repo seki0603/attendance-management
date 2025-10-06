@@ -49,39 +49,6 @@ class BreakTimeTest extends TestCase
     }
 
     /** @test */
-    public function 休憩は一日に何回でもできる()
-    {
-        /** @var User $user */
-        $user = User::factory()->create();
-
-        $attendance = Attendance::factory()->create([
-            'user_id' => $user->id,
-            'clock_in' => now()->subHours(3),
-            'clock_out' => null,
-        ]);
-
-        // 1回目の休憩
-        $this->actingAs($user)->post(route('attendance.store'), [
-            'break_start' => now()->format('H:i'),
-        ]);
-        $this->actingAs($user)->post(route('attendance.store'), [
-            'break_end' => now()->addMinutes(15)->format('H:i'),
-        ]);
-
-        // 2回目の休憩開始
-        $this->actingAs($user)->post(route('attendance.store'), [
-            'break_start' => now()->format('H:i'),
-        ]);
-
-        $this->assertEquals(2, BreakTime::where('attendance_id', $attendance->id)->count());
-
-        // ステータス表示確認
-        $this->actingAs($user)
-            ->get('/attendance')
-            ->assertSee('休憩中');
-    }
-
-    /** @test */
     public function 休憩戻ボタンが正しく機能する()
     {
         /** @var User $user */
@@ -111,6 +78,39 @@ class BreakTimeTest extends TestCase
         $this->actingAs($user)
             ->get('/attendance')
             ->assertSee('出勤中');
+    }
+
+    /** @test */
+    public function 休憩は一日に何回でもできる()
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        $attendance = Attendance::factory()->create([
+            'user_id' => $user->id,
+            'clock_in' => now()->subHours(3),
+            'clock_out' => null,
+        ]);
+
+        // 1回目の休憩
+        $this->actingAs($user)->post(route('attendance.store'), [
+            'break_start' => now()->format('H:i'),
+        ]);
+        $this->actingAs($user)->post(route('attendance.store'), [
+            'break_end' => now()->addMinutes(15)->format('H:i'),
+        ]);
+
+        // 2回目の休憩開始
+        $this->actingAs($user)->post(route('attendance.store'), [
+            'break_start' => now()->format('H:i'),
+        ]);
+
+        $this->assertEquals(2, BreakTime::where('attendance_id', $attendance->id)->count());
+
+        // 休憩戻ボタン確認
+        $this->actingAs($user)
+            ->get('/attendance')
+            ->assertSee('休憩戻');
     }
 
     /** @test */

@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\AttendanceController;
-use App\Models\Attendance;
 
 /*
 |--------------------------------------------------------------------------
