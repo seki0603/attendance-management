@@ -26,26 +26,26 @@
         </div>
 
 
-        <table class="list__table">
-            <tr class="list__table-row">
-                <th class="list__table-item--date">日付</th>
-                <th class="list__table-item">出勤</th>
-                <th class="list__table-item">退勤</th>
-                <th class="list__table-item">休憩</th>
-                <th class="list__table-item">合計</th>
-                <th class="list__table-item--detail">詳細</th>
+        <table class="list-table">
+            <tr class="list-table__row">
+                <th class="list-table__item--date">日付</th>
+                <th class="list-table__item">出勤</th>
+                <th class="list-table__item">退勤</th>
+                <th class="list-table__item">休憩</th>
+                <th class="list-table__item">合計</th>
+                <th class="list-table__item--detail">詳細</th>
             </tr>
 
             @foreach ($records as $record)
-            <tr class="list__table-row">
-                <td class="list__table-item--date">{{ $record['date_str'] }} ({{ $record['weekday'] }})</td>
-                <td class="list__table-item">{{ $record['clock_in'] }}</td>
-                <td class="list__table-item">{{ $record['clock_out'] }}</td>
-                <td class="list__table-item">{{ $record['total_break_time'] }}</td>
-                <td class="list__table-item">{{ $record['total_work_time'] }}</td>
-                <td class="list__table-item--detail">
+            <tr class="list-table__row">
+                <td class="list-table__item--date">{{ $record['date_str'] }} ({{ $record['weekday'] }})</td>
+                <td class="list-table__item">{{ $record['clock_in'] }}</td>
+                <td class="list-table__item">{{ $record['clock_out'] }}</td>
+                <td class="list-table__item">{{ $record['total_break_time'] }}</td>
+                <td class="list-table__item">{{ $record['total_work_time'] }}</td>
+                <td class="list-table__item--detail">
                     @if ($record['detail_url'])
-                    <a class="list__table-link" href="{{ $record['detail_url'] }}">詳細</a>
+                    <a class="list-table__link" href="{{ $record['detail_url'] }}">詳細</a>
                     @else
                     詳細
                     @endif

@@ -66,7 +66,7 @@
     padding: 0 10px;
 }
 
-.list__table {
+.list-table {
     width: 100%;
     background: #fff;
     font-size: 16px;
@@ -77,30 +77,30 @@
     table-layout: fixed;
 }
 
-.list__table-row {
+.list-table__row {
     height: 50px;
     border-bottom: 2px solid #E1E1E1;
 }
 
-.list__table-row:first-child {
+.list-table__row:first-child {
     border-bottom: 3px solid #E1E1E1;
 }
 
-.list__table-item--date {
+.list-table__item--date {
     text-align: left;
     padding-left: 50px;
 }
 
-.list__table-item {
+.list-table__item {
     text-align: center;
 }
 
-.list__table-item--detail {
+.list-table__item--detail {
     text-align: left;
     padding-left: 30px;
 }
 
-.list__table-link {
+.list-table__link {
     text-decoration: none;
     color: #737373;
 }

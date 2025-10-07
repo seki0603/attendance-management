@@ -38,4 +38,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(CorrectionRequest::class);
     }
+
+    // 全角スペースありの名前アクセサ
+    public function getFullNameAttribute()
+    {
+        $name = preg_replace('/\s+/u', '　', $this->name);
+        if (!str_contains($name, '　')) {
+            $name = mb_substr($name, 0, 2) . '　' . mb_substr($name, 2);
+        }
+        return $name;
+    }
 }

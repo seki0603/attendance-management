@@ -144,8 +144,30 @@ class AttendanceController extends Controller
 
     public function showDetail($id)
     {
-        $attendance = Attendance::with('breaks')->findOrFail($id);
+        $attendance = Attendance::with(['user', 'breaks'])->findOrFail($id);
 
-        return view('attendance.detail', compact('attendance'));
+        $date = Carbon::parse($attendance->work_date);
+
+        $formattedBreaks = $attendance->breaks->map(function ($break) {
+            return [
+                'break_start' => $break->break_start
+                    ? Carbon::parse($break->break_start)->format('H:i')
+                    : '',
+                'break_end' => $break->break_end
+                    ? Carbon::parse($break->break_end)->format('H:i')
+                    : '',
+            ];
+        });
+
+        $data = [
+            'name' => $attendance->user->full_name,
+            'year' => $date->format('Y年'),
+            'month_day' => $date->format('n月j日'),
+            'clock_in' => optional($attendance->clock_in)->format('H:i'),
+            'clock_out' => optional($attendance->clock_out)->format('H:i'),
+            'breaks' => $formattedBreaks,
+        ];
+
+        return view('attendance.detail', compact('data'));
     }
 }
