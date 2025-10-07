@@ -55,4 +55,5 @@ class Attendance extends Model
         $weekday = $weekdays[\Carbon\Carbon::parse($this->work_date)->dayOfWeek];
         return " ({$weekday}) ";
     }
+
 }

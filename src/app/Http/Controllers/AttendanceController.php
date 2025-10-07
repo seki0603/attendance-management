@@ -146,6 +146,10 @@ class AttendanceController extends Controller
     {
         $attendance = Attendance::with(['user', 'breaks'])->findOrFail($id);
 
+        $hasPendingRequest = $attendance->correctionRequests()
+            ->where('status', '承認待ち')
+            ->exists();
+
         $date = Carbon::parse($attendance->work_date);
 
         $formattedBreaks = $attendance->breaks->map(function ($break) {
@@ -166,8 +170,9 @@ class AttendanceController extends Controller
             'clock_in' => optional($attendance->clock_in)->format('H:i'),
             'clock_out' => optional($attendance->clock_out)->format('H:i'),
             'breaks' => $formattedBreaks,
+            'readonly' => $hasPendingRequest,
         ];
 
-        return view('attendance.detail', compact('data'));
+        return view('attendance.detail', compact('attendance', 'data'));
     }
 }

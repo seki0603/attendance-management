@@ -119,5 +119,6 @@ class AttendanceListTest extends TestCase
         $response = $this->actingAs($user)->get(route('attendance.detail', $attendance->id));
 
         $response->assertStatus(200);
+        $response->assertSee('10月6日');
     }
 }

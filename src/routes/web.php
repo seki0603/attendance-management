@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\CorrectionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,4 +35,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/list', [AttendanceController::class, 'showList'])->name('attendance.list');
     Route::get('/attendance/detail/{id}', [AttendanceController::class, 'showDetail'])->name('attendance.detail');
+
+    Route::post('/attendance/detail/{attendance}', [CorrectionController::class, 'store'])->name('correction.store');
 });

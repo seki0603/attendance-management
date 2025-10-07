@@ -26,8 +26,8 @@ class AttendanceRequest extends FormRequest
         return [
             'clock_in' => ['nullable', 'date_format:H:i'],
             'clock_out' => ['nullable', 'date_format:H:i', 'after:clock_in'],
-            'start_break' => ['nullable', 'date_format:H:i'],
-            'end_break' => ['nullable', 'date_format:H:i'],
+            'break_start' => ['nullable', 'date_format:H:i'],
+            'break_end' => ['nullable', 'date_format:H:i'],
         ];
     }
 }
