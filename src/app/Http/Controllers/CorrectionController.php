@@ -29,14 +29,23 @@ class CorrectionController extends Controller
                 'status'        => '承認待ち',
             ]);
 
-            if ($request->filled('break_start') && $request->filled('break_end')) {
-                $breakStart = Carbon::parse($request->break_start);
-                $breakEnd = Carbon::parse($request->break_end);
+            $breakPairs = collect($request->all())
+                ->filter(fn($v, $k) => preg_match('/^break_start_\d+$/', $k))
+                ->map(function ($start, $key) use ($request) {
+                    $num = (int) str_replace('break_start_', '', $key);
+                    return [
+                        'start' => $start,
+                        'end'   => $request->input("break_end_{$num}"),
+                    ];
+                })
+                ->filter(fn($pair) => $pair['start'] && $pair['end'])
+                ->values();
 
+            foreach ($breakPairs as $pair) {
                 CorrectionBreak::create([
                     'correction_request_id' => $correction->id,
-                    'break_start' => $breakStart,
-                    'break_end' => $breakEnd,
+                    'break_start' => Carbon::parse($pair['start']),
+                    'break_end'   => Carbon::parse($pair['end']),
                 ]);
             }
         });

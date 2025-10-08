@@ -144,33 +144,70 @@ class AttendanceController extends Controller
 
     public function showDetail($id)
     {
-        $attendance = Attendance::with(['user', 'breaks'])->findOrFail($id);
+        $attendance = Attendance::with([
+            'user',
+            'breaks',
+            'correctionRequests.correctionBreaks',
+        ])->findOrFail($id);
 
-        $hasPendingRequest = $attendance->correctionRequests()
+        $pending = $attendance->correctionRequests
             ->where('status', '承認待ち')
-            ->exists();
+            ->sortByDesc('id')
+            ->first();
+
+        // 表示ソース決定（承認待ち優先）
+        if ($pending) {
+            $sourceClockIn  = $pending->clock_in
+                ? Carbon::parse($pending->clock_in)->format('H:i')
+                : '';
+            $sourceClockOut = $pending->clock_out
+                ? Carbon::parse($pending->clock_out)->format('H:i')
+                : '';
+            $breakSource    = $pending->correctionBreaks;
+            $note           = $pending->note ?? '';
+            $isPending      = true;
+        } else {
+            $sourceClockIn  = $attendance->clock_in
+                ? Carbon::parse($attendance->clock_in)->format('H:i')
+                : '';
+            $sourceClockOut = $attendance->clock_out
+                ? Carbon::parse($attendance->clock_out)->format('H:i')
+                : '';
+            $breakSource    = $attendance->breaks;
+            $note           = '';
+            $isPending      = false;
+        }
+
+        // 休憩の表示用データ
+        $formattedBreaks = collect($breakSource)->map(function ($break) {
+            return [
+                'break_start' => $break->break_start
+                    ? Carbon::parse($break->break_start)->format('H:i') : '',
+                'break_end' => $break->break_end
+                    ? Carbon::parse($break->break_end)->format('H:i') : '',
+            ];
+        })->values();
+
+        // 休憩追加表示用
+        $nextIndex = $formattedBreaks->count() + 1;
+        $nextBreak = [
+            'break_start' => old('break_start_' . $nextIndex),
+            'break_end'   => old('break_end_' . $nextIndex),
+        ];
 
         $date = Carbon::parse($attendance->work_date);
 
-        $formattedBreaks = $attendance->breaks->map(function ($break) {
-            return [
-                'break_start' => $break->break_start
-                    ? Carbon::parse($break->break_start)->format('H:i')
-                    : '',
-                'break_end' => $break->break_end
-                    ? Carbon::parse($break->break_end)->format('H:i')
-                    : '',
-            ];
-        });
-
         $data = [
-            'name' => $attendance->user->full_name,
-            'year' => $date->format('Y年'),
-            'month_day' => $date->format('n月j日'),
-            'clock_in' => optional($attendance->clock_in)->format('H:i'),
-            'clock_out' => optional($attendance->clock_out)->format('H:i'),
-            'breaks' => $formattedBreaks,
-            'readonly' => $hasPendingRequest,
+            'name'       => $attendance->user->full_name,
+            'year'       => $date->format('Y年'),
+            'month_day'  => $date->format('n月j日'),
+            'clock_in'   => $sourceClockIn,
+            'clock_out'  => $sourceClockOut,
+            'breaks'     => $formattedBreaks,
+            'next_break' => $nextBreak,
+            'next_index' => $nextIndex,
+            'note'       => $note,
+            'is_pending' => $isPending,
         ];
 
         return view('attendance.detail', compact('attendance', 'data'));
