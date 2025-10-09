@@ -86,7 +86,7 @@
     border-bottom: 3px solid #E1E1E1;
 }
 
-.list-table__item--date {
+.list-table__item-date {
     text-align: left;
     padding-left: 50px;
 }
@@ -95,7 +95,7 @@
     text-align: center;
 }
 
-.list-table__item--detail {
+.list-table__item-detail {
     text-align: left;
     padding-left: 30px;
 }

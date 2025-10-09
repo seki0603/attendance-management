@@ -22,7 +22,7 @@
             <div class="header__link-wrapper">
                 <a class="header__link" href="{{ route('attendance.index') }}">勤怠</a>
                 <a class="header__link" href="{{ route('attendance.list') }}">勤怠一覧</a>
-                <a class="header__link" href="">申請</a>
+                <a class="header__link" href="{{ route('correction.list')}}">申請</a>
                 <form class="header__button" action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button class="header__button-logout" type="submit">ログアウト</button>

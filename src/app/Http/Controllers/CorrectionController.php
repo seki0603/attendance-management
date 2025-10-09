@@ -21,12 +21,12 @@ class CorrectionController extends Controller
 
             $correction = Correction::firstOrCreate([
                 'attendance_id' => $attendance->id,
-                'user_id'       => auth()->id(),
-                'work_date'     => $attendance->work_date,
-                'clock_in'      => $clockIn,
-                'clock_out'     => $clockOut,
-                'note'          => $request->note,
-                'status'        => '承認待ち',
+                'user_id' => auth()->id(),
+                'work_date' => $attendance->work_date,
+                'clock_in' => $clockIn,
+                'clock_out' => $clockOut,
+                'note' => $request->note,
+                'status' => '承認待ち',
             ]);
 
             $breakPairs = collect($request->all())
@@ -51,5 +51,10 @@ class CorrectionController extends Controller
         });
 
         return redirect()->route('attendance.detail', $attendanceId)->with('message', '修正申請を送信しました');
+    }
+
+    public function showList()
+    {
+        return view('correction.user-list');
     }
 }

@@ -28,22 +28,22 @@
 
         <table class="list-table">
             <tr class="list-table__row">
-                <th class="list-table__item--date">日付</th>
+                <th class="list-table__item-date">日付</th>
                 <th class="list-table__item">出勤</th>
                 <th class="list-table__item">退勤</th>
                 <th class="list-table__item">休憩</th>
                 <th class="list-table__item">合計</th>
-                <th class="list-table__item--detail">詳細</th>
+                <th class="list-table__item-detail">詳細</th>
             </tr>
 
             @foreach ($records as $record)
             <tr class="list-table__row">
-                <td class="list-table__item--date">{{ $record['date_str'] }} ({{ $record['weekday'] }})</td>
+                <td class="list-table__item-date">{{ $record['date_str'] }} ({{ $record['weekday'] }})</td>
                 <td class="list-table__item">{{ $record['clock_in'] }}</td>
                 <td class="list-table__item">{{ $record['clock_out'] }}</td>
                 <td class="list-table__item">{{ $record['total_break_time'] }}</td>
                 <td class="list-table__item">{{ $record['total_work_time'] }}</td>
-                <td class="list-table__item--detail">
+                <td class="list-table__item-detail">
                     @if ($record['detail_url'])
                     <a class="list-table__link" href="{{ $record['detail_url'] }}">詳細</a>
                     @else

@@ -24,8 +24,8 @@ class CorrectionRequest extends FormRequest
     public function rules()
     {
         return array_merge([
-            'clock_in' => ['required', 'date_format:H:i'],
-            'clock_out' => ['required', 'date_format:H:i', 'after:clock_in'],
+            'clock_in' => ['required', 'date_format:H:i', 'before:clock_out'],
+            'clock_out' => ['required', 'date_format:H:i'],
             'note' => ['required'],
             ],
             $this->_dynamic_rules ?? []);
@@ -35,8 +35,8 @@ class CorrectionRequest extends FormRequest
     {
         return [
             'clock_in.required' => '出勤時間を入力してください',
+            'clock_in.before' => '出勤時間もしくは退勤時間が不適切な値です',
             'clock_out.required' => '退勤時間を入力してください',
-            'clock_out.after' => '出勤時間もしくは退勤時間が不適切な値です',
             '*.date_format' => '休憩時間が不適切な値です',
             '*.after' => '休憩時間が不適切な値です',
             '*.before' => '休憩時間もしくは退勤時間が不適切な値です',

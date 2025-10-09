@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Attendance;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
@@ -14,6 +15,8 @@ class ClockInTest extends TestCase
     /** @test */
     public function 出勤ボタンが正しく機能する()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 18, 0, 0));
+
         /** @var User $user */
         $user = User::factory()->create();
 
@@ -42,6 +45,8 @@ class ClockInTest extends TestCase
     /** @test */
     public function 出勤は一日一回のみできる()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 18, 0, 0));
+
         /** @var User $user */
         $user = User::factory()->create();
 
@@ -59,6 +64,8 @@ class ClockInTest extends TestCase
     /** @test */
     public function 出勤時刻が勤怠一覧画面で確認できる()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 18, 0, 0));
+
         /** @var User $user */
         $user = User::factory()->create();
 
@@ -69,8 +76,8 @@ class ClockInTest extends TestCase
 
         $response = $this->actingAs($user)->get('/attendance/list');
 
-        $response->assertSee(now()->format('Y年m月'));
-        $response->assertSee(now()->format('d'));
+        $response->assertSee(now()->format('Y/m'));
+        $response->assertSee(now()->format('m/d'));
         $response->assertSee(now()->format('H:i'));
     }
 }
