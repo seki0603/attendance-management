@@ -12,15 +12,15 @@
         {{-- 月ページャー --}}
         <div class="list__month-wrapper">
             <a class="list__last-month"
-                href="{{ route('attendance.list', ['month' => $current->copy()->subMonth()->format('Y-m')]) }}">
+                href="{{ $previousMonthUrl }}">
                 <img class="last-month__image" src="{{ asset('images/arrow.png') }}" alt="arrow">前月
             </a>
             <div class="list__month">
                 <img class="list__month-image" src="{{ asset('images/calendar.png') }}" alt="calendar">
-                <p class="list__month-text">{{ $current->format('Y/m') }}</p>
+                <p class="list__month-text">{{ $displayMonth }}</p>
             </div>
             <a class="list__next-month"
-                href="{{ route('attendance.list', ['month' => $current->copy()->addMonth()->format('Y-m')]) }}">
+                href="{{ $nextMonthUrl }}">
                 翌月<img class="next-month__image" src="{{ asset('images/arrow.png') }}" alt="arrow">
             </a>
         </div>

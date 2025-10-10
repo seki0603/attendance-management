@@ -24,41 +24,41 @@
             <table class="detail-table">
                 <tr class="detail-table__row">
                     <th class="detail-table__header">名前</th>
-                    <td class="detail-table__item">{{ $data['name'] }}</td>
+                    <td class="detail-table__item">{{ $viewData['name'] }}</td>
                 </tr>
                 <tr class="detail-table__row">
                     <th class="detail-table__header">日付</th>
-                    <td class="detail-table__item">{{ $data['year'] }}</td>
+                    <td class="detail-table__item">{{ $viewData['year'] }}</td>
                     <td class="detail-table__tilde"></td>
-                    <td class="detail-table__item">{{ $data['month_day'] }}</td>
+                    <td class="detail-table__item">{{ $viewData['month_day'] }}</td>
                     <td class="detail-table__item"></td>
                 </tr>
                 <tr class="detail-table__row">
                     <th class="detail-table__header">出勤・退勤</th>
                     <td class="detail-table__item">
-                        @if ($data['is_pending'])
-                        {{ old('clock_in', $data['clock_in']) }}
+                        @if ($viewData['is_pending'])
+                        {{ old('clock_in', $viewData['clock_in']) }}
                         @else
                         <input class="detail-table__input" type="time" name="clock_in"
-                            value="{{ old('clock_in', $data['clock_in']) }}">
+                            value="{{ old('clock_in', $viewData['clock_in']) }}">
                         @endif
                     </td>
                     <td class="detail-table__tilde">～</td>
                     <td class="detail-table__item">
-                        @if ($data['is_pending'])
-                        {{ old('clock_out', $data['clock_out'] )}}
+                        @if ($viewData['is_pending'])
+                        {{ old('clock_out', $viewData['clock_out'] )}}
                         @else
                         <input class="detail-table__input" type="time" name="clock_out"
-                            value="{{ old('clock_out', $data['clock_out'] )}}">
+                            value="{{ old('clock_out', $viewData['clock_out'] )}}">
                         @endif
                     </td>
                     <td class="detail-table__item"></td>
                 </tr>
-                @foreach ($data['breaks'] as $index => $break)
+                @foreach ($viewData['breaks'] as $index => $break)
                 <tr class="detail-table__row">
                     <th class="detail-table__header">休憩{{ $index > 0 ? $index + 1 : '' }}</th>
                     <td class="detail-table__item">
-                        @if ($data['is_pending'])
+                        @if ($viewData['is_pending'])
                         {{ $break['break_start'] }}
                         @else
                         <input class="detail-table__input" type="time" name="break_start_{{ $index + 1 }}"
@@ -67,7 +67,7 @@
                     </td>
                     <td class="detail-table__tilde">～</td>
                     <td class="detail-table__item">
-                        @if ($data['is_pending'])
+                        @if ($viewData['is_pending'])
                         {{ $break['break_end'] }}
                         @else
                         <input class="detail-table__input" type="time" name="break_end_{{ $index + 1 }}"
@@ -78,24 +78,24 @@
                 </tr>
                 @endforeach
 
-                @if (!$data['is_pending'])
+                @if (!$viewData['is_pending'])
                 <tr class="detail-table__row">
-                    <th class="detail-table__header">休憩{{ $data['next_index'] }}</th>
+                    <th class="detail-table__header">休憩{{ $viewData['next_index'] }}</th>
                     <td class="detail-table__item">
-                        @if ($data['is_pending'])
-                        {{ $data['next_break']['break_start'] }}
+                        @if ($viewData['is_pending'])
+                        {{ $viewData['next_break']['break_start'] }}
                         @else
-                        <input class="detail-table__input" type="time" name="break_start_{{ $data['next_index'] }}"
-                            value="{{ $data['next_break']['break_start'] }}">
+                        <input class="detail-table__input" type="time" name="break_start_{{ $viewData['next_index'] }}"
+                            value="{{ $viewData['next_break']['break_start'] }}">
                         @endif
                     </td>
                     <td class="detail-table__tilde">～</td>
                     <td class="detail-table__item">
-                        @if ($data['is_pending'])
-                        {{ $data['next_break']['break_end'] }}
+                        @if ($viewData['is_pending'])
+                        {{ $viewData['next_break']['break_end'] }}
                         @else
-                        <input class="detail-table__input" type="time" name="break_end_{{ $data['next_index'] }}"
-                            value="{{ $data['next_break']['break_end'] }}">
+                        <input class="detail-table__input" type="time" name="break_end_{{ $viewData['next_index'] }}"
+                            value="{{ $viewData['next_break']['break_end'] }}">
                         @endif
                     </td>
                     <td class="detail-table__item"></td>
@@ -103,9 +103,9 @@
                 @endif
                 <tr class="detail-table__row">
                     <th class="detail-table__header">備考</th>
-                    @if ($data['is_pending'])
+                    @if ($viewData['is_pending'])
                     <td class="detail-table__item">
-                        {{ $data['note'] }}
+                        {{ $viewData['note'] }}
                     </td>
                     @else
                     <td class="detail-table__item" colspan="3">
@@ -115,7 +115,7 @@
                 </tr>
             </table>
 
-            @if ($data['is_pending'])
+            @if ($viewData['is_pending'])
             <p class="status__message">*承認待ちのため修正はできません。</p>
             @else
             <div class="form__button">

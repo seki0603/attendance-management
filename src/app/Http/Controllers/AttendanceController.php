@@ -10,27 +10,40 @@ use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
+    private const WEEKDAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
+
     public function index()
     {
         $user = auth()->user();
-        $today = now()->toDateString();
+        $now = now();
+        $today = $now->toDateString();
+
         $attendance = Attendance::where('user_id', $user->id)
             ->where('work_date', $today)
             ->first();
 
-            if (!$attendance) {
-                $status = '勤務外';
-            } elseif ($attendance->clock_out) {
-                $status = '退勤済';
-            } elseif (session('on_break')) {
-                $status = '休憩中';
-            } elseif ($attendance->clock_in && !$attendance->clock_out) {
-                $status = '出勤中';
-            } else {
-                $status = '勤務外';
-            }
+        // ステータス判定
+        if (!$attendance) {
+            $attendanceStatus = '勤務外';
+        } elseif ($attendance->clock_out) {
+            $attendanceStatus = '退勤済';
+        } elseif (session('on_break')) {
+            $attendanceStatus = '休憩中';
+        } elseif ($attendance->clock_in && !$attendance->clock_out) {
+            $attendanceStatus = '出勤中';
+        } else {
+            $attendanceStatus = '勤務外';
+        }
 
-        return view('attendance.index', compact('attendance', 'status'))->with('now', now());
+        // 表示用データをまとめる
+        $viewData = [
+            'status' => $attendanceStatus,
+            'date' => $now->format('Y年m月d日'),
+            'weekday' => '(' . self::WEEKDAY_LABELS[$now->dayOfWeek] . ')',
+            'time' => $now->format('H:i'),
+        ];
+
+        return view('attendance.index', compact('attendance', 'viewData'));
     }
 
     public function store(AttendanceRequest $request)
@@ -73,12 +86,9 @@ class AttendanceController extends Controller
                 ->whereNotNull('break_start')
                 ->whereNotNull('break_end')
                 ->get()
-                ->sum(fn($b) => $b->break_start->diffInMinutes($b->break_end));
+                ->sum(fn($break) => $break->break_end->diffInMinutes($break->break_start));
 
-            $attendance->update([
-                'total_break_time' => $totalBreak,
-            ]);
-
+            $attendance->update(['total_break_time' => $totalBreak]);
             session(['on_break' => false]);
         }
 
@@ -91,7 +101,9 @@ class AttendanceController extends Controller
                 : null;
 
             $attendance->update([
-                'total_work_time'  => $totalWork ? max($totalWork - $attendance->total_break_time, 0) : null,
+                'total_work_time'  => $totalWork
+                ? max($totalWork - $attendance->total_break_time, 0)
+                : null,
             ]);
         }
 
@@ -102,44 +114,51 @@ class AttendanceController extends Controller
     {
         $user = auth()->user();
 
-        // 現在の月 or パラメータ指定
-        $month = $request->input('month', now()->format('Y-m'));
-        $current = Carbon::createFromFormat('Y-m', $month);
-        $start = $current->copy()->startOfMonth();
-        $end   = $current->copy()->endOfMonth();
+        // 対象月（指定 or 現在月）
+        $monthParam = $request->input('month', now()->format('Y-m'));
+        $currentMonth = Carbon::createFromFormat('Y-m', $monthParam);
+        $startDate = $currentMonth->copy()->startOfMonth();
+        $endDate = $currentMonth->copy()->endOfMonth();
 
-        // 該当月の勤怠情報取得
+        // 勤怠情報取得
         $attendances = Attendance::where('user_id', $user->id)
-            ->whereBetween('work_date', [$start->toDateString(), $end->toDateString()])
+            ->whereBetween('work_date', [$startDate->toDateString(), $endDate->toDateString()])
             ->get()
-            ->each->refresh()
             ->keyBy(fn($item) => Carbon::parse($item->work_date)->format('Y-m-d'));
 
+        // 一覧データ生成
         $records = collect();
-        $day = $start->copy();
+        $day = $startDate->copy();
 
-        while ($day->lte($end)) {
-            $key = $day->format('Y-m-d');
-            $attendance = $attendances->get($key);
+        while ($day->lte($endDate)) {
+            $dateKey = $day->format('Y-m-d');
+            $attendance = $attendances->get($dateKey);
 
             $records->push([
                 'date_str' => $day->format('m/d'),
-                'weekday'  => ['日', '月', '火', '水', '木', '金', '土'][$day->dayOfWeek],
-                'clock_in'  => $attendance?->clock_in ? $attendance->clock_in->format('H:i') : '',
-                'clock_out' => $attendance?->clock_out ? $attendance->clock_out->format('H:i') : '',
+                'weekday' => self::WEEKDAY_LABELS[$day->dayOfWeek],
+                'clock_in' => $attendance?->clock_in?->format('H:i') ?? '',
+                'clock_out' => $attendance?->clock_out?->format('H:i') ?? '',
                 'total_break_time' => $attendance?->total_break_time
-                    ? gmdate('H:i', $attendance->total_break_time * 60)
+                    ? $this->formatMinutes($attendance->total_break_time)
                     : '',
-                'total_work_time'  => $attendance?->total_work_time
-                    ? gmdate('H:i', $attendance->total_work_time * 60)
+                'total_work_time' => $attendance?->total_work_time
+                    ? $this->formatMinutes($attendance->total_work_time)
                     : '',
-                'detail_url'  => $attendance ? route('attendance.detail', $attendance->id) : null,
+                'detail_url' => $attendance
+                    ? route('attendance.detail', $attendance->id)
+                    : null,
             ]);
 
             $day->addDay();
         }
 
-        return view('attendance.list', compact('records', 'current'));
+        return view('attendance.list', [
+            'records' => $records,
+            'displayMonth' => $currentMonth->format('Y/m'),
+            'previousMonthUrl' => route('attendance.list', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')]),
+            'nextMonthUrl' => route('attendance.list', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')]),
+        ]);
     }
 
     public function showDetail($id)
@@ -155,61 +174,47 @@ class AttendanceController extends Controller
             ->sortByDesc('id')
             ->first();
 
-        // 表示ソース決定（承認待ち優先）
-        if ($pending) {
-            $sourceClockIn  = $pending->clock_in
-                ? Carbon::parse($pending->clock_in)->format('H:i')
-                : '';
-            $sourceClockOut = $pending->clock_out
-                ? Carbon::parse($pending->clock_out)->format('H:i')
-                : '';
-            $breakSource    = $pending->correctionBreaks;
-            $note           = $pending->note ?? '';
-            $isPending      = true;
-        } else {
-            $sourceClockIn  = $attendance->clock_in
-                ? Carbon::parse($attendance->clock_in)->format('H:i')
-                : '';
-            $sourceClockOut = $attendance->clock_out
-                ? Carbon::parse($attendance->clock_out)->format('H:i')
-                : '';
-            $breakSource    = $attendance->breaks;
-            $note           = '';
-            $isPending      = false;
-        }
+        $source = $pending ?? $attendance;
+        $breakSource = $pending?->correctionBreaks ?? $attendance->breaks;
 
         // 休憩の表示用データ
-        $formattedBreaks = collect($breakSource)->map(function ($break) {
+        $formattedBreaks = collect($breakSource)->map(function ($break, $index) {
+            $index++;
             return [
-                'break_start' => $break->break_start
-                    ? Carbon::parse($break->break_start)->format('H:i') : '',
-                'break_end' => $break->break_end
-                    ? Carbon::parse($break->break_end)->format('H:i') : '',
+                'break_start' => old('break_start_' . $index, $break->break_start ? Carbon::parse($break->break_start)->format('H:i') : ''),
+                'break_end'   => old('break_end_' . $index,   $break->break_end   ? Carbon::parse($break->break_end)->format('H:i')   : ''),
             ];
         })->values();
 
-        // 休憩追加表示用
         $nextIndex = $formattedBreaks->count() + 1;
+
         $nextBreak = [
             'break_start' => old('break_start_' . $nextIndex),
-            'break_end'   => old('break_end_' . $nextIndex),
+            'break_end' => old('break_end_' . $nextIndex),
         ];
 
         $date = Carbon::parse($attendance->work_date);
 
-        $data = [
-            'name'       => $attendance->user->full_name,
-            'year'       => $date->format('Y年'),
-            'month_day'  => $date->format('n月j日'),
-            'clock_in'   => $sourceClockIn,
-            'clock_out'  => $sourceClockOut,
-            'breaks'     => $formattedBreaks,
+        $viewData = [
+            'name' => $attendance->user->full_name,
+            'year' => $date->format('Y年'),
+            'month_day' => $date->format('n月j日'),
+            'clock_in' => old('clock_in',  $source->clock_in ? Carbon::parse($source->clock_in)->format('H:i') : ''),
+            'clock_out' => old('clock_out', $source->clock_out ? Carbon::parse($source->clock_out)->format('H:i') : ''),
+            'breaks' => $formattedBreaks,
             'next_break' => $nextBreak,
             'next_index' => $nextIndex,
-            'note'       => $note,
-            'is_pending' => $isPending,
+            'note' => old('note', $pending?->note ?? ''),
+            'is_pending' => (bool) $pending,
         ];
 
-        return view('attendance.detail', compact('attendance', 'data'));
+        return view('attendance.detail', compact('attendance', 'viewData'));
+    }
+
+    private function formatMinutes($time): string
+    {
+        if ($time === null) return '';
+        $minutes = is_float($time) ? (int) round($time * 60) : (int) $time;
+        return sprintf('%d:%02d', intdiv($minutes, 60), $minutes % 60);
     }
 }

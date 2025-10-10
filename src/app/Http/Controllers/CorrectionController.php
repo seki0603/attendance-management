@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
-use App\Models\CorrectionRequest as Correction;
 use App\Models\CorrectionBreak;
 use App\Http\Requests\CorrectionRequest;
 use Illuminate\Http\Request;
@@ -20,7 +19,7 @@ class CorrectionController extends Controller
             $clockIn = Carbon::parse($request->clock_in);
             $clockOut = Carbon::parse($request->clock_out);
 
-            $correction = Correction::firstOrCreate([
+            $correctionRequest = CorrectionRequest::firstOrCreate([
                 'attendance_id' => $attendance->id,
                 'user_id' => auth()->id(),
                 'work_date' => $attendance->work_date,
@@ -31,7 +30,7 @@ class CorrectionController extends Controller
             ]);
 
             $breakPairs = collect($request->all())
-                ->filter(fn($v, $k) => preg_match('/^break_start_\d+$/', $k))
+                ->filter(fn($key) => preg_match('/^break_start_\d+$/', $key))
                 ->map(function ($start, $key) use ($request) {
                     $num = (int) str_replace('break_start_', '', $key);
                     return [
@@ -44,7 +43,7 @@ class CorrectionController extends Controller
 
             foreach ($breakPairs as $pair) {
                 CorrectionBreak::create([
-                    'correction_request_id' => $correction->id,
+                    'correction_request_id' => $correctionRequest->id,
                     'break_start' => Carbon::parse($pair['start']),
                     'break_end'   => Carbon::parse($pair['end']),
                 ]);

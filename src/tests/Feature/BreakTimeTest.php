@@ -142,7 +142,10 @@ class BreakTimeTest extends TestCase
             ->whereDate('work_date', $today)
             ->first();
 
-        $expectedFormatted = gmdate('H:i', $attendance->total_break_time * 60);
+        $minutes = $attendance->total_break_time;
+        $hours = intdiv($minutes, 60);
+        $mins  = $minutes % 60;
+        $expectedFormatted = sprintf('%d:%02d', $hours, $mins);
 
         $response = $this->actingAs($user)->get('/attendance/list');
         $response->assertSee($expectedFormatted);

@@ -45,15 +45,4 @@ class Attendance extends Model
     {
         return $this->hasMany(CorrectionRequest::class);
     }
-
-    // 曜日表示のアクセサ
-    public function getJpWeekdayAttribute()
-    {
-        if (!$this->work_date) return '';
-
-        $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-        $weekday = $weekdays[\Carbon\Carbon::parse($this->work_date)->dayOfWeek];
-        return " ({$weekday}) ";
-    }
-
 }
