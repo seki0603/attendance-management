@@ -21,7 +21,7 @@ class CreateCorrectionRequestsTable extends Migration
             $table->dateTime('clock_in')->nullable();
             $table->dateTime('clock_out')->nullable();
             $table->text('note')->nullable();
-            $table->enum('status', ['承認待ち', '承認済'])->default('承認待ち');
+            $table->enum('status', ['承認待ち', '承認済み'])->default('承認待ち');
             $table->timestamps();
         });
     }

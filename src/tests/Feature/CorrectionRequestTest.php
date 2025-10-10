@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
-class CorrectionTest extends TestCase
+class CorrectionRequestTest extends TestCase
 {
     use DatabaseMigrations;
 

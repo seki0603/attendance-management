@@ -41,6 +41,7 @@
     color: #737373;
     border-radius: 10px;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .list-table__row {
@@ -53,11 +54,19 @@
 }
 
 .list-table__item-status {
-    width: 20%;
     text-align: center;
 }
 
+.list-table__item-name {
+    text-align: left;
+    padding-left: 20px;
+}
+
 .list-table__item {
+    text-align: left;
+}
+
+.list-table__item-detail {
     width: 15%;
     text-align: left;
 }

@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\CorrectionRequest as Correction;
 use App\Models\CorrectionBreak;
 use App\Http\Requests\CorrectionRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -53,8 +54,33 @@ class CorrectionController extends Controller
         return redirect()->route('attendance.detail', $attendanceId)->with('message', '修正申請を送信しました');
     }
 
-    public function showList()
+    public function showList(Request $request)
     {
-        return view('correction.user-list');
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+        $tab = $request->get('tab', 'waiting');
+
+        $query = $user->correctionRequests()->with('attendance');
+
+        if ($tab === 'completed') {
+            $requests = $query->where('status', '承認済み')->get();
+        } else {
+            $requests = $query->where('status', '承認待ち')->get();
+        }
+
+        $records = $requests->map(function ($request) {
+            return [
+                'status' => $request->status,
+                'name' => $request->user->name,
+                'work_date' => optional($request->attendance)->work_date
+                    ? Carbon::parse($request->attendance->work_date)->format('Y/m/d')
+                    : '-',
+                'note' => $request->note ?? '',
+                'created_at' => $request->created_at->format('Y/m/d'),
+                'detail_url' => route('attendance.detail', $request->attendance_id),
+            ];
+        });
+
+        return view('correction.user-list', compact('records', 'tab'));
     }
 }

@@ -18,7 +18,9 @@ class AttendanceSeeder extends Seeder
      */
     public function run()
     {
-        $users = User::where('role', 'user')->get();
+        $users = User::where('role', 'user')
+            ->where('email', '!=', 'test@example.com')
+            ->get();
 
         foreach ($users as $user) {
             foreach (range(0, 1) as $monthOffset) {
