@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CorrectionController;
+use App\Http\Controllers\AdminAttendanceController;
+use App\Http\Middleware\AdminMiddleware;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +25,9 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [\Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/admin/login', [AuthController::class, 'showAdminLoginForm'])->name('admin.login');
+Route::post('/logout', [AuthController::class, 'adminLogout'])->name('admin.logout');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('email/verify', [VerificationController::class, 'notice'])->name('verification.notice');
     Route::get('/email/verify/page', [VerificationController::class, 'page'])->name('verification.site');
@@ -38,4 +43,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/attendance/detail/{attendance}', [CorrectionController::class, 'store'])->name('correction.store');
     Route::get('/stamp_correction_request/list', [CorrectionController::class, 'showList'])->name('correction.list');
+});
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.list');
+    Route::get('attendance/{id}', [AttendanceController::class, 'showDetail'])->name('admin.attendance.detail');
+    Route::put('attendance/{id}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
 });

@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
-class UserLoginTest extends TestCase
+class AdminLoginTest extends TestCase
 {
     use DatabaseMigrations;
 
@@ -16,6 +16,7 @@ class UserLoginTest extends TestCase
         User::factory()->create([
             'email' => 'test@example.com',
             'password' => bcrypt('password123'),
+            'role' => 'admin',
         ]);
 
         $response = $this->post(route('login'), [
@@ -34,6 +35,7 @@ class UserLoginTest extends TestCase
         User::factory()->create([
             'email' => 'test@example.com',
             'password' => bcrypt('password123'),
+            'role' => 'admin',
         ]);
 
         $response = $this->post(route('login'), [
@@ -52,6 +54,7 @@ class UserLoginTest extends TestCase
         User::factory()->create([
             'email' => 'test@example.com',
             'password' => bcrypt('password123'),
+            'role' => 'admin',
         ]);
 
         $response = $this->post(route('login'), [

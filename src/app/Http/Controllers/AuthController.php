@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Http\Requests\RegisterRequest;
 use Illuminate\Http\Request;
 use Laravel\Fortify\Fortify;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
-use App\Http\Requests\RegisterRequest;
-use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -21,6 +21,11 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         return view('auth.login');
+    }
+
+    public function showAdminLoginForm()
+    {
+        return view('admin.login');
     }
 
     public function store(RegisterRequest $request)
@@ -55,5 +60,18 @@ class AuthController extends Controller
         }
 
         return redirect()->route('login');
+    }
+
+    public function adminLogout(Request $request)
+    {
+
+        Auth::logout();
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return redirect()->route('admin.login');
     }
 }

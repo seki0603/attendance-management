@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\BreakTime;
-use Illuminate\Http\Request;
 use App\Http\Requests\AttendanceRequest;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
@@ -207,6 +207,10 @@ class AttendanceController extends Controller
             'note' => old('note', $pending?->note ?? ''),
             'is_pending' => (bool) $pending,
         ];
+
+        if (auth()->user()->role === 'admin') {
+            return view('admin.attendance-detail', compact('attendance', 'viewData'));
+        }
 
         return view('attendance.detail', compact('attendance', 'viewData'));
     }
