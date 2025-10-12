@@ -1,0 +1,109 @@
+.detail__wrapper {
+    max-width: 1400px;
+    margin: 80px auto;
+    padding: 0 20px;
+}
+
+.detail {
+    width: 60%;
+    margin: 0 auto;
+}
+
+.form {
+    margin: 50px 0;
+}
+
+.detail__title {
+    font-size: 30px;
+    border-left: 8px solid #000;
+    padding: 0 20px;
+}
+
+.success {
+    padding: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #0073CC;
+}
+
+.detail-table {
+    width: 100%;
+    background: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    border-collapse: collapse;
+}
+
+.detail-table__row {
+    height: 90px;
+    border-bottom: 2px solid #e1e1e1;
+}
+
+.detail-table__header {
+    width: 30%;
+    color: #737373;
+    text-align: left;
+    padding-left: 60px;
+}
+
+.detail-table__item {
+    width: 20%;
+    text-align: center;
+}
+
+.detail-table__tilde {
+    width: 10%;
+    text-align: center;
+}
+.detail-table__input {
+    width: 60%;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #e1e1e1;
+    border-radius: 6px;
+    -moz-appearance: textfield;
+    appearance: none;
+    border: none;
+    outline: none;
+    pointer-events: none;
+}
+
+.detail-table__input::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+.detail-table__textarea {
+    width: 85%;
+    margin: 10px 0;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    resize: none;
+    border: none;
+    outline: none;
+    pointer-events: none;
+}
+
+.form__button {
+    width: 100%;
+    text-align: right;
+    margin: 30px 0;
+}
+
+.form__button-submit {
+    width: 130px;
+    height: 50px;
+    background: #000;
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}

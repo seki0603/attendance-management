@@ -6,7 +6,7 @@ use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CorrectionController;
 use App\Http\Controllers\AdminAttendanceController;
-use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\AdminCorrectionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,4 +49,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.list');
     Route::get('attendance/{id}', [AttendanceController::class, 'showDetail'])->name('admin.attendance.detail');
     Route::put('attendance/{id}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
+    Route::get('/stamp_correction_request/list', [AdminCorrectionController::class, 'index'])->name('admin.correction.list');
+    Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminCorrectionController::class, 'showApproveForm'])->name('admin.correction.approve');
 });
