@@ -175,7 +175,14 @@ class AttendanceController extends Controller
             ->first();
 
         $source = $pending ?? $attendance;
-        $breakSource = $pending?->correctionBreaks ?? $attendance->breaks;
+
+        if ($pending) {
+            $breakSource = $pending->correctionBreaks->isNotEmpty()
+                ? $pending->correctionBreaks
+                : collect(); // 修正申請があれば空でも元のbreaksを表示しない
+        } else {
+            $breakSource = $attendance->breaks;
+        }
 
         // 休憩の表示用データ
         $formattedBreaks = collect($breakSource)->map(function ($break, $index) {

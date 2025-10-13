@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Attendance;
-use App\Http\Requests\CorrectionRequest;
+use App\Http\Requests\CorrectionRequest as CorrectionRequestForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -57,7 +57,7 @@ class AdminAttendanceController extends Controller
         ]);
     }
 
-    public function update(CorrectionRequest $request, $id)
+    public function update(CorrectionRequestForm $request, $id)
     {
         $attendance = Attendance::findOrFail($id);
 

@@ -26,7 +26,7 @@ Route::post('/login', [\Laravel\Fortify\Http\Controllers\AuthenticatedSessionCon
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/admin/login', [AuthController::class, 'showAdminLoginForm'])->name('admin.login');
-Route::post('/logout', [AuthController::class, 'adminLogout'])->name('admin.logout');
+Route::post('/admin/logout', [AuthController::class, 'adminLogout'])->name('admin.logout');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('email/verify', [VerificationController::class, 'notice'])->name('verification.notice');
@@ -51,4 +51,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('attendance/{id}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
     Route::get('/stamp_correction_request/list', [AdminCorrectionController::class, 'index'])->name('admin.correction.list');
     Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminCorrectionController::class, 'showApproveForm'])->name('admin.correction.approve');
+    Route::put('/stamp_correction_request/approve/{id}', [AdminCorrectionController::class, 'update'])->name('admin.correction.approve.update');
 });

@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\CorrectionRequest;
 use App\Models\CorrectionBreak;
-use App\Http\Requests\CorrectionRequest;
+use App\Http\Requests\CorrectionRequest as CorrectionRequestForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class CorrectionController extends Controller
 {
-    public function store(CorrectionRequest $request, $attendanceId)
+    public function store(CorrectionRequestForm $request, $attendanceId)
     {
         $attendance = Attendance::findOrFail($attendanceId);
 
@@ -19,7 +20,7 @@ class CorrectionController extends Controller
             $clockIn = Carbon::parse($request->clock_in);
             $clockOut = Carbon::parse($request->clock_out);
 
-            $correctionRequest = CorrectionRequest::firstOrCreate([
+            $correctionRequest = CorrectionRequest::create([
                 'attendance_id' => $attendance->id,
                 'user_id' => auth()->id(),
                 'work_date' => $attendance->work_date,
@@ -30,12 +31,14 @@ class CorrectionController extends Controller
             ]);
 
             $breakPairs = collect($request->all())
-                ->filter(fn($key) => preg_match('/^break_start_\d+$/', $key))
+                ->filter(function ($value, $key) {
+                    return preg_match('/^break_start_\d+$/', $key);
+                })
                 ->map(function ($start, $key) use ($request) {
                     $num = (int) str_replace('break_start_', '', $key);
                     return [
                         'start' => $start,
-                        'end'   => $request->input("break_end_{$num}"),
+                        'end' => $request->input("break_end_{$num}"),
                     ];
                 })
                 ->filter(fn($pair) => $pair['start'] && $pair['end'])

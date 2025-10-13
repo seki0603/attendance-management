@@ -12,7 +12,7 @@
         <p class="success">{{ session('message') }}</p>
         @endif
 
-        {{-- <form class="form" action="{{ route('admin.correction.approve.update', $request->id) }}" method="POST" novalidate> --}}
+        <form class="form" action="{{ route('admin.correction.approve.update', $viewData['id']) }}" method="POST" novalidate>
             @method('put')
             @csrf
             <table class="detail-table">
@@ -69,9 +69,13 @@
             </table>
 
             <div class="form__button">
-                <button class="form__button-submit" type="submit">承認</button>
+                @if ($viewData['status'] === '承認済み')
+                    <p class="form__button-disabled">承認済み</p>
+                @else
+                    <button class="form__button-submit" type="submit">承認</button>
+                @endif
             </div>
-        {{-- </form> --}}
+        </form>
     </div>
 </div>
 @endsection
