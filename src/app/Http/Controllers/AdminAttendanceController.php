@@ -11,8 +11,6 @@ use Carbon\Carbon;
 
 class AdminAttendanceController extends Controller
 {
-    private const WEEKDAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
-
     public function index(Request $request)
     {
         $dateParam = $request->input('date', now()->toDateString());
@@ -111,8 +109,6 @@ class AdminAttendanceController extends Controller
             ->route('admin.attendance.detail', $attendance->id)
             ->with('message', '勤怠情報を修正しました。');
     }
-
-
 
     private function formatMinutes(int $minutes): string
     {

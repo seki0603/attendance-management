@@ -7,6 +7,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CorrectionController;
 use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\AdminCorrectionController;
+use App\Http\Controllers\StaffController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,4 +53,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/stamp_correction_request/list', [AdminCorrectionController::class, 'index'])->name('admin.correction.list');
     Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminCorrectionController::class, 'showApproveForm'])->name('admin.correction.approve');
     Route::put('/stamp_correction_request/approve/{id}', [AdminCorrectionController::class, 'update'])->name('admin.correction.approve.update');
+
+    Route::get('/staff/list', [StaffController::class, 'index'])->name('admin.staff.list');
+    Route::get('/attendance/staff/{id}', [StaffController::class, 'showAttendanceList'])->name('admin.attendance.staff.list');
+
+    Route::get('/attendance/staff/{id}/csv', [StaffController::class, 'exportCsv'])->name('admin.attendance.staff.csv');
 });
