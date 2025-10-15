@@ -24,6 +24,7 @@ class DateTimeTest extends TestCase
         $response->assertSeeInOrder([
             now()->format('Y年m月d日'),
             '(' . ['日', '月', '火', '水', '木', '金', '土'][now()->dayOfWeek] . ')',
+            now()->format('H:i'),
         ]);
     }
 }

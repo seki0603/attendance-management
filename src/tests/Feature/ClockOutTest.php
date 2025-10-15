@@ -19,11 +19,10 @@ class ClockOutTest extends TestCase
 
         /** @var User $user */
         $user = User::factory()->create();
-        $today = now()->toDateString();
 
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
-            'work_date' => $today,
+            'work_date' => '2025-10-06',
             'clock_in' => now()->subHours(8),
             'clock_out' => null,
         ]);
@@ -54,11 +53,10 @@ class ClockOutTest extends TestCase
 
         /** @var User $user */
         $user = User::factory()->create();
-        $today = now()->toDateString();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
-            'work_date' => $today,
+            'work_date' => '2025-10-06',
             'clock_in' => now(),
         ]);
 
@@ -67,13 +65,10 @@ class ClockOutTest extends TestCase
             'clock_out' => now()->format('H:i'),
         ]);
 
-        $attendance = Attendance::where('user_id', $user->id)
-            ->whereDate('work_date', $today)
-            ->first();
-
-        $expectedTime = $attendance->clock_out->format('H:i');
+        $attendance->refresh();
 
         $response = $this->actingAs($user)->get('/attendance/list');
-        $response->assertSee($expectedTime);
+
+        $response->assertSee('8:30');
     }
 }

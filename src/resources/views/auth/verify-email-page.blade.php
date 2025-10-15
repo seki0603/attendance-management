@@ -20,7 +20,7 @@
     <main>
         <div class="content">
             <p class="content__text">メール内のリンクをクリックしてください。<br>
-                認証が完了すると自動的にプロフィール設定画面へ遷移します。</p>
+                認証が完了すると自動的に打刻画面へ遷移します。</p>
 
             <p class="content__info">メールが届かない場合</p>
             <form action="{{ route('verification.send') }}" method="POST">

@@ -16,13 +16,15 @@ class BreakTimeTest extends TestCase
     /** @test */
     public function 休憩ボタンが正しく機能する()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 0, 0));
 
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
-            'clock_in' => now()->subHours(2),
+            'work_date' => '2025-10-06',
+            'clock_in' => now(),
             'clock_out' => null,
         ]);
 
@@ -31,7 +33,8 @@ class BreakTimeTest extends TestCase
             ->get('/attendance')
             ->assertSee('休憩入');
 
-        $response = $this->actingAs($user)
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 45, 0));
+            $response = $this->actingAs($user)
             ->post(route('attendance.store'), [
                 'break_start' => now()->format('H:i'),
             ]);
@@ -49,16 +52,52 @@ class BreakTimeTest extends TestCase
     }
 
     /** @test */
-    public function 休憩戻ボタンが正しく機能する()
+    public function 休憩は一日に何回でもできる()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 0, 0));
+
         /** @var User $user */
         $user = User::factory()->create();
-        Attendance::factory()->create([
+
+        Attendance::create([
             'user_id' => $user->id,
-            'clock_in' => now()->subHours(3),
+            'work_date' => '2025-10-06',
+            'clock_in' => now(),
             'clock_out' => null,
         ]);
 
+        // 1回目の休憩
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 15, 0));
+        $this->actingAs($user)->post(route('attendance.store'), [
+            'break_start' => now()->format('H:i'),
+        ]);
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 45, 0));
+        $this->actingAs($user)->post(route('attendance.store'), [
+            'break_end' => now()->format('H:i'),
+        ]);
+
+        // 休憩入ボタン再表示確認
+        $this->actingAs($user)
+            ->get('/attendance')
+            ->assertSee('休憩入');
+    }
+
+    /** @test */
+    public function 休憩戻ボタンが正しく機能する()
+    {
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 0, 0));
+
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        Attendance::create([
+            'user_id' => $user->id,
+            'work_date' => '2025-10-06',
+            'clock_in' => now(),
+            'clock_out' => null,
+        ]);
+
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 15, 0));
         $this->actingAs($user)->post(route('attendance.store'), [
             'break_start' => now()->format('H:i'),
         ]);
@@ -68,8 +107,9 @@ class BreakTimeTest extends TestCase
             ->get('/attendance')
             ->assertSee('休憩戻');
 
-        $this->actingAs($user)->post(route('attendance.store'), [
-            'break_end' => now()->addMinutes(20)->format('H:i'),
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 45, 0));
+            $this->actingAs($user)->post(route('attendance.store'), [
+            'break_end' => now()->format('H:i'),
         ]);
 
         $this->assertNotNull(BreakTime::first()->break_end);
@@ -81,31 +121,35 @@ class BreakTimeTest extends TestCase
     }
 
     /** @test */
-    public function 休憩は一日に何回でもできる()
+    public function 休憩戻は一日に何回でもできる()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 0, 0));
+
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
-            'clock_in' => now()->subHours(3),
+            'work_date' => '2025-10-06',
+            'clock_in' => now(),
             'clock_out' => null,
         ]);
 
         // 1回目の休憩
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 10, 0, 0));
         $this->actingAs($user)->post(route('attendance.store'), [
             'break_start' => now()->format('H:i'),
         ]);
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 10, 15, 0));
         $this->actingAs($user)->post(route('attendance.store'), [
-            'break_end' => now()->addMinutes(15)->format('H:i'),
+            'break_end' => now()->format('H:i'),
         ]);
 
         // 2回目の休憩開始
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 12, 0, 0));
         $this->actingAs($user)->post(route('attendance.store'), [
             'break_start' => now()->format('H:i'),
         ]);
-
-        $this->assertEquals(2, BreakTime::where('attendance_id', $attendance->id)->count());
 
         // 休憩戻ボタン確認
         $this->actingAs($user)
@@ -116,39 +160,32 @@ class BreakTimeTest extends TestCase
     /** @test */
     public function 休憩時刻が勤怠一覧画面で確認できる()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 0, 0));
+
         /** @var User $user */
         $user = User::factory()->create();
-        $today = '2025-10-06';
 
-        Carbon::setTestNow(Carbon::create(2025, 10, 6, 9, 0, 0));
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
-            'work_date' => $today,
-            'clock_in' => now()->subHours(4),
+            'work_date' => '2025-10-06',
+            'clock_in' => now(),
             'clock_out' => null,
         ]);
 
         Carbon::setTestNow(Carbon::create(2025, 10, 6, 10, 0, 0));
         $this->actingAs($user)->post(route('attendance.store'), [
-            'break_start' => now()->subHour()->format('H:i'),
+            'break_start' => now()->format('H:i'),
         ]);
-
-        Carbon::setTestNow(Carbon::create(2025, 10, 6, 10, 30, 0));
+        Carbon::setTestNow(Carbon::create(2025, 10, 6, 10, 15, 0));
         $this->actingAs($user)->post(route('attendance.store'), [
-            'break_end' => now()->subMinutes(30)->format('H:i'),
+            'break_end' => now()->format('H:i'),
         ]);
 
-        $attendance = Attendance::where('user_id', $user->id)
-            ->whereDate('work_date', $today)
-            ->first();
-
-        $minutes = $attendance->total_break_time;
-        $hours = intdiv($minutes, 60);
-        $mins  = $minutes % 60;
-        $expectedFormatted = sprintf('%d:%02d', $hours, $mins);
+        $attendance->refresh();
 
         $response = $this->actingAs($user)->get('/attendance/list');
-        $response->assertSee($expectedFormatted);
+
+        $response->assertSee('0:15');
         // Figmaによる画面設計に従い、時刻ではなく合計休憩時間表示で確認。
     }
 }

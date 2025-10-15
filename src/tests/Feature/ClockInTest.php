@@ -50,10 +50,11 @@ class ClockInTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
             'work_date' => now()->toDateString(),
             'clock_in' => now()->subHours(8),
+            'clock_out' => now(),
         ]);
 
         $this->actingAs($user)

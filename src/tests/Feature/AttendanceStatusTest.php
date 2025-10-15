@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Attendance;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
@@ -14,6 +15,8 @@ class AttendanceStatusTest extends TestCase
     /** @test */
     public function 勤務外の場合、勤怠ステータスが正しく表示される()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 5, 10, 30, 0));
+
         /** @var \App\Models\User $user */
         $user = User::factory()->create();
 
@@ -25,10 +28,14 @@ class AttendanceStatusTest extends TestCase
     /** @test */
     public function 出勤中の場合、勤怠ステータスが正しく表示される()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 5, 10, 30, 0));
+
         /** @var \App\Models\User $user */
         $user = User::factory()->create();
-        Attendance::factory()->create([
+
+        Attendance::create([
             'user_id' => $user->id,
+            'work_date' => now()->toDateString(),
             'clock_in' => now()->subHours(2),
             'clock_out' => null,
         ]);
@@ -41,10 +48,14 @@ class AttendanceStatusTest extends TestCase
     /** @test */
     public function 休憩中の場合、勤怠ステータスが正しく表示される()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 5, 10, 30, 0));
+
         /** @var \App\Models\User $user */
         $user = User::factory()->create();
-        Attendance::factory()->create([
+
+        Attendance::create([
             'user_id' => $user->id,
+            'work_date' => now()->toDateString(),
             'clock_in' => now()->subHours(3),
             'clock_out' => null,
         ]);
@@ -59,11 +70,14 @@ class AttendanceStatusTest extends TestCase
     /** @test */
     public function 退勤済の場合、勤怠ステータスが正しく表示される()
     {
+        Carbon::setTestNow(Carbon::create(2025, 10, 5, 10, 30, 0));
+
         /** @var \App\Models\User $user */
         $user = User::factory()->create();
 
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
+            'work_date' => now()->toDateString(),
             'clock_in' => now()->subHours(8),
             'clock_out' => now(),
         ]);

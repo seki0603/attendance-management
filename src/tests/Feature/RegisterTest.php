@@ -102,9 +102,9 @@ class RegisterTest extends TestCase
             'role' => 'user',
         ]);
 
-        // パスワードがハッシュ化され、保存されていることを確認
         $user = User::where('email', 'test@example.com')->first();
         $this->assertNotNull($user);
         $this->assertTrue(Hash::check('password123', $user->password));
+        // パスワードがハッシュ化され、保存されていることを確認
     }
 }

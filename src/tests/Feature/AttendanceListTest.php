@@ -92,7 +92,6 @@ class AttendanceListTest extends TestCase
             'clock_out' => now()->addMonth()->setTime(18, 0),
         ]);
 
-        // act: 「翌月」ボタン押下イメージ
         $response = $this->actingAs($user)
             ->get(route('attendance.list', ['month' => '2025-11']));
 
