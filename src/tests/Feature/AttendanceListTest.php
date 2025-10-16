@@ -20,22 +20,28 @@ class AttendanceListTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        Attendance::factory()->count(3)->sequence(
-            ['work_date' => Carbon::now()->subDays(2)->toDateString()],
-            ['work_date' => Carbon::now()->subDay()->toDateString()],
-            ['work_date' => Carbon::now()->toDateString()],
-        )->create([
-            'user_id' => $user->id,
-            'clock_in' => now()->subHours(8),
-            'clock_out' => now(),
-        ]);
+        $clockInTimes = [
+            Carbon::create(2025, 10, 4, 8, 0, 0),
+            Carbon::create(2025, 10, 5, 9, 0, 0),
+            Carbon::create(2025, 10, 6, 10, 0, 0),
+        ];
+
+        foreach ($clockInTimes as $clockIn) {
+            Attendance::create([
+                'user_id' => $user->id,
+                'work_date' => $clockIn->toDateString(),
+                'clock_in' => $clockIn,
+            ]);
+        }
 
         $response = $this->actingAs($user)->get(route('attendance.list'));
 
-        $response->assertStatus(200)
-            ->assertSee('10/04')
-            ->assertSee('10/05')
-            ->assertSee('10/06');
+        $response->assertStatus(200);
+
+        // 出勤時刻が全て表示されているかで確認
+        foreach ($clockInTimes as $clockIn) {
+            $response->assertSee($clockIn->format('H:i'));
+        }
     }
 
     /** @test */
@@ -61,7 +67,7 @@ class AttendanceListTest extends TestCase
         $user = User::factory()->create();
 
         // 9月分データ
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-09-15',
             'clock_in' => now()->subMonth()->setTime(9, 0),
@@ -73,7 +79,9 @@ class AttendanceListTest extends TestCase
 
         $response->assertStatus(200)
             ->assertSee('2025/09')
-            ->assertSee('09/15');
+            ->assertSee('09/15')
+            ->assertSee('09:00')
+            ->assertSee('18:00');
     }
 
     /** @test */
@@ -85,7 +93,7 @@ class AttendanceListTest extends TestCase
         $user = User::factory()->create();
 
         // 11月分データ
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-11-03',
             'clock_in' => now()->addMonth()->setTime(9, 0),
@@ -97,7 +105,9 @@ class AttendanceListTest extends TestCase
 
         $response->assertStatus(200)
             ->assertSee('2025/11')
-            ->assertSee('11/03');
+            ->assertSee('11/03')
+            ->assertSee('09:00')
+            ->assertSee('18:00');
     }
 
     /** @test */
@@ -108,7 +118,7 @@ class AttendanceListTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-10-06',
             'clock_in' => now()->setTime(9, 0),

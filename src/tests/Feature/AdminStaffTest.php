@@ -45,9 +45,9 @@ class AdminStaffTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
-            'work_date' => Carbon::now()->toDateString(),
+            'work_date' => '2025-10-15',
             'clock_in' => now(),
             'clock_out' => now()->addHours(8),
         ]);
@@ -72,7 +72,7 @@ class AdminStaffTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-09-15',
             'clock_in' => now()->subMonth()->setTime(9, 0),
@@ -84,7 +84,9 @@ class AdminStaffTest extends TestCase
 
         $response->assertStatus(200)
             ->assertSee('2025/09')
-            ->assertSee('09/15');
+            ->assertSee('09/15')
+            ->assertSee('09:00')
+            ->assertSee('18:00');
     }
 
     /** @test */
@@ -98,7 +100,7 @@ class AdminStaffTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-11-15',
             'clock_in' => now()->subMonth()->setTime(9, 0),
@@ -110,7 +112,9 @@ class AdminStaffTest extends TestCase
 
         $response->assertStatus(200)
             ->assertSee('2025/11')
-            ->assertSee('11/15');
+            ->assertSee('11/15')
+            ->assertSee('09:00')
+            ->assertSee('18:00');
     }
 
     /** @test */
@@ -124,11 +128,11 @@ class AdminStaffTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-10-15',
-            'clock_in' => now()->subMonth()->setTime(9, 0),
-            'clock_out' => now()->subMonth()->setTime(18, 0),
+            'clock_in' => now(),
+            'clock_out' => now()->setTime(18, 0),
         ]);
 
         $response = $this->actingAs($admin)
@@ -141,6 +145,8 @@ class AdminStaffTest extends TestCase
             ->get(route('attendance.detail', $attendance->id))
             ->assertStatus(200)
             ->assertSee('勤怠詳細')
-            ->assertSee('10月15日');
+            ->assertSee('10月15日')
+            ->assertSee('09:00')
+            ->assertSee('18:00');
     }
 }

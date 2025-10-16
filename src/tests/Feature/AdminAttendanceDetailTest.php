@@ -23,7 +23,7 @@ class AdminAttendanceDetailTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => now()->toDateString(),
         ]);
@@ -47,15 +47,15 @@ class AdminAttendanceDetailTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => now()->toDateString(),
         ]);
 
         $response = $this->actingAs($admin)->put(route('admin.attendance.update', ['id' => $attendance->id]), [
             'work_date' => $attendance->work_date,
-            'clock_in' => now()->setHour(19),
-            'clock_out' => now()->setHour(18),
+            'clock_in' => now()->setTime(19, 0),
+            'clock_out' => now()->setTime(18, 0),
         ]);
 
         $response->assertSessionHasErrors([
@@ -74,15 +74,15 @@ class AdminAttendanceDetailTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => now()->toDateString(),
         ]);
 
         $response = $this->actingAs($admin)->put(route('admin.attendance.update', ['id' => $attendance->id]), [
             'work_date' => $attendance->work_date,
-            'clock_out' => now()->setHour(18),
-            'break_start_1' => now()->setHour(19),
+            'clock_out' => now()->setTime(18, 0),
+            'break_start_1' => now()->setTime(19, 0),
         ]);
 
         $response->assertSessionHasErrors([
@@ -101,16 +101,16 @@ class AdminAttendanceDetailTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => now()->toDateString(),
         ]);
 
         $response = $this->actingAs($admin)->put(route('admin.attendance.update', ['id' => $attendance->id]), [
             'work_date' => $attendance->work_date,
-            'clock_out' => now()->setHour(18),
-            'break_start_1' => now()->setHour(17),
-            'break_end_1' => now()->setHour(19),
+            'clock_out' => now()->setTime(18, 0),
+            'break_start_1' => now()->setTime(17, 0),
+            'break_end_1' => now()->setTime(19, 0),
         ]);
 
         $response->assertSessionHasErrors([
@@ -129,7 +129,7 @@ class AdminAttendanceDetailTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => now()->toDateString(),
         ]);
@@ -137,7 +137,6 @@ class AdminAttendanceDetailTest extends TestCase
         $response = $this->actingAs($admin)->put(route('admin.attendance.update', ['id' => $attendance->id]), [
             'work_date' => $attendance->work_date,
             'note' => '',
-            'status' => '承認待ち',
         ]);
 
         $response->assertSessionHasErrors([

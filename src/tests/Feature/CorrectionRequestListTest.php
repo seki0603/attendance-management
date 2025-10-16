@@ -21,11 +21,20 @@ class CorrectionRequestListTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendances = Attendance::factory()->count(3)->sequence(
-            ['work_date' => Carbon::now()->subDays(2)->toDateString()],
-            ['work_date' => Carbon::now()->subDay()->toDateString()],
-            ['work_date' => Carbon::now()->toDateString()],
-        )->create(['user_id' => $user->id]);
+        $dates = [
+            Carbon::now()->subDays(2),
+            Carbon::now()->subDay(),
+            Carbon::now(),
+        ];
+
+        $attendances = collect();
+        foreach ($dates as $date) {
+            $attendance = Attendance::create([
+                'user_id' => $user->id,
+                'work_date' => $date->toDateString(),
+            ]);
+            $attendances->push($attendance);
+        }
 
         foreach ($attendances as $attendance) {
             CorrectionRequest::create([
@@ -33,7 +42,6 @@ class CorrectionRequestListTest extends TestCase
                 'attendance_id' => $attendance->id,
                 'work_date' => $attendance->work_date,
                 'status' => '承認待ち',
-                'created_at' => Carbon::now(),
             ]);
         }
 
@@ -56,11 +64,20 @@ class CorrectionRequestListTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendances = Attendance::factory()->count(3)->sequence(
-            ['work_date' => Carbon::now()->subDays(2)->toDateString()],
-            ['work_date' => Carbon::now()->subDay()->toDateString()],
-            ['work_date' => Carbon::now()->toDateString()],
-        )->create(['user_id' => $user->id]);
+        $dates = [
+            Carbon::now()->subDays(2),
+            Carbon::now()->subDay(),
+            Carbon::now(),
+        ];
+
+        $attendances = collect();
+        foreach ($dates as $date) {
+            $attendance = Attendance::create([
+                'user_id' => $user->id,
+                'work_date' => $date->toDateString(),
+            ]);
+            $attendances->push($attendance);
+        }
 
         foreach ($attendances as $attendance) {
             CorrectionRequest::create([
@@ -68,7 +85,6 @@ class CorrectionRequestListTest extends TestCase
                 'attendance_id' => $attendance->id,
                 'work_date' => $attendance->work_date,
                 'status' => '承認済み',
-                'created_at' => Carbon::now(),
             ]);
         }
 
@@ -91,7 +107,7 @@ class CorrectionRequestListTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-10-10',
         ]);
@@ -101,7 +117,6 @@ class CorrectionRequestListTest extends TestCase
             'attendance_id' => $attendance->id,
             'work_date' => $attendance->work_date,
             'status' => '承認待ち',
-            'created_at' => Carbon::now(),
         ]);
 
         $response = $this->actingAs($user)

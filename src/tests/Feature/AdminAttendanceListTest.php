@@ -24,11 +24,11 @@ class AdminAttendanceListTest extends TestCase
         /** @var User $user */
         $users = User::factory(3)->create();
 
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $users[0]->id,
             'work_date' => now()->toDateString(),
-            'clock_in' => Carbon::create(2025, 10, 11, 9, 0),
-            'clock_out' => Carbon::create(2025, 10, 11, 17, 0),
+            'clock_in' => now(),
+            'clock_out' => now()->setTime(17, 0),
             'total_break_time' => 60,
             'total_work_time' => 480,
         ]);
@@ -75,7 +75,7 @@ class AdminAttendanceListTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-10-10',
             'clock_in' => now()->subDay()->setTime(9, 0),
@@ -105,7 +105,7 @@ class AdminAttendanceListTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        Attendance::factory()->create([
+        Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-10-12',
             'clock_in' => now()->addDay()->setTime(9, 0),

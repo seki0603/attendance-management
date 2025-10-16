@@ -25,9 +25,9 @@ class CorrectionApproveTest extends TestCase
         $users = User::factory(3)->create();
 
         foreach ($users as $user) {
-            $attendance = Attendance::factory()->create([
+            $attendance = Attendance::create([
                 'user_id' => $user->id,
-                'work_date' => Carbon::now()->toDateString(),
+                'work_date' => '2025-10-14',
             ]);
 
             CorrectionRequest::create([
@@ -35,7 +35,6 @@ class CorrectionApproveTest extends TestCase
                 'attendance_id' => $attendance->id,
                 'work_date' => $attendance->work_date,
                 'status' => '承認待ち',
-                'created_at' => Carbon::now(),
             ]);
         }
 
@@ -61,9 +60,9 @@ class CorrectionApproveTest extends TestCase
         $users = User::factory(3)->create();
 
         foreach ($users as $user) {
-            $attendance = Attendance::factory()->create([
+            $attendance = Attendance::create([
                 'user_id' => $user->id,
-                'work_date' => Carbon::now()->toDateString(),
+                'work_date' => '2025-10-14',
             ]);
 
             CorrectionRequest::create([
@@ -71,7 +70,6 @@ class CorrectionApproveTest extends TestCase
                 'attendance_id' => $attendance->id,
                 'work_date' => $attendance->work_date,
                 'status' => '承認済み',
-                'created_at' => Carbon::now(),
             ]);
         }
 
@@ -97,7 +95,7 @@ class CorrectionApproveTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-10-14',
         ]);
@@ -106,8 +104,8 @@ class CorrectionApproveTest extends TestCase
             'user_id' => $user->id,
             'attendance_id' => $attendance->id,
             'work_date' => $attendance->work_date,
+            'note' => 'テスト申請',
             'status' => '承認待ち',
-            'created_at' => Carbon::now(),
         ]);
 
         $response = $this->actingAs($admin)
@@ -120,7 +118,8 @@ class CorrectionApproveTest extends TestCase
             ->assertStatus(200)
             ->assertSee('勤怠詳細')
             ->assertSee($user->full_name)
-            ->assertSee('10月14日');
+            ->assertSee('10月14日')
+            ->assertSee('テスト申請');
     }
 
     /** @test */
@@ -134,7 +133,7 @@ class CorrectionApproveTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $attendance = Attendance::factory()->create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-10-13',
             'clock_in' => now()->subDay()->setTime(9, 0),
@@ -150,7 +149,6 @@ class CorrectionApproveTest extends TestCase
             'clock_in' => now()->subDay()->setTime(9, 0),
             'clock_out' => now()->subDay()->setTime(18, 0),
             'status' => '承認待ち',
-            'created_at' => Carbon::now(),
         ]);
 
         $response = $this->actingAs($admin)
