@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Attendance;
 use App\Models\BreakTime;
-use App\Models\AttendanceStatus;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Seeder;
@@ -19,14 +18,12 @@ class AttendanceSeeder extends Seeder
      */
     public function run()
     {
-        $users = User::where('role', 'user')
-            ->where('email', '!=', 'test@example.com')
-            ->get();
+        $users = User::where('role', 'user')->get();
 
-        // 直近60日分の勤怠を作成
-        $today = Carbon::now();
-        $startDate = $today->copy()->subDays(59);
-        $period = CarbonPeriod::create($startDate, $today);
+        // 直近2か月分の勤怠（シーディング日前日まで）
+        $endDate = Carbon::now()->subDay();
+        $startDate = $endDate->copy()->subMonths(2)->addDay();
+        $period = CarbonPeriod::create($startDate, $endDate);
 
         foreach ($users as $user) {
             foreach ($period as $workDate) {
@@ -71,12 +68,6 @@ class AttendanceSeeder extends Seeder
 
         $attendance->update([
             'total_break_time' => $totalBreakMinutes,
-        ]);
-
-        // ステータスを退勤済で固定
-        AttendanceStatus::create([
-            'attendance_id' => $attendance->id,
-            'status' => '退勤済',
         ]);
     }
 }

@@ -72,7 +72,7 @@ class EmailVerificationTest extends TestCase
 
         $response = $this->actingAs($user)->get($verificationUrl);
 
-        $response->assertRedirect(route('attendance.index'));
+        $response->assertRedirect(route('attendance.show_form'));
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
     }
 }

@@ -14,13 +14,13 @@
     <header class="header">
         <div class="header__inner">
             <div class="header__logo">
-                <a href="{{ route('attendance.index') }}">
+                <a href="{{ route('attendance.show_form') }}">
                     <img class="header__logo-img" src="{{ asset('images/logo.svg') }}" alt="COACHTECH">
                 </a>
             </div>
 
             <div class="header__link-wrapper">
-                <a class="header__link" href="{{ route('attendance.index') }}">勤怠</a>
+                <a class="header__link" href="{{ route('attendance.show_form') }}">勤怠</a>
                 <a class="header__link" href="{{ route('attendance.list') }}">勤怠一覧</a>
                 <a class="header__link" href="{{ route('correction.list')}}">申請</a>
                 <form class="header__button" action="{{ route('logout') }}" method="POST">

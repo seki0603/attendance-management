@@ -56,7 +56,7 @@ class CorrectionController extends Controller
         return redirect()->route('attendance.detail', $attendanceId)->with('message', '修正申請を送信しました');
     }
 
-    public function showList(Request $request)
+    public function index(Request $request)
     {
         /** @var \App\Models\User $user */
         $user = auth()->user();

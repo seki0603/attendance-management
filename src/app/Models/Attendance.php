@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Attendance extends Model
 {
@@ -34,11 +33,6 @@ class Attendance extends Model
     public function breaks()
     {
         return $this->hasMany(BreakTime::class);
-    }
-
-    public function status()
-    {
-        return $this->hasOne(AttendanceStatus::class);
     }
 
     public function correctionRequests()

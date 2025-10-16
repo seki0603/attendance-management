@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttendanceDetailController;
 use App\Http\Controllers\CorrectionController;
 use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\AdminCorrectionController;
@@ -25,7 +26,6 @@ Route::post('/register/store', [AuthController::class, 'store'])->name('register
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [\Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
 Route::get('/admin/login', [AuthController::class, 'showAdminLoginForm'])->name('admin.login');
 Route::post('/admin/logout', [AuthController::class, 'adminLogout'])->name('admin.logout');
 
@@ -37,19 +37,21 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('/attendance', [AttendanceController::class, 'showForm'])->name('attendance.show_form');
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
-    Route::get('/attendance/list', [AttendanceController::class, 'showList'])->name('attendance.list');
-    Route::get('/attendance/detail/{id}', [AttendanceController::class, 'showDetail'])->name('attendance.detail');
+    Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.list');
+
+    Route::get('/attendance/detail/{id}', [AttendanceDetailController::class, 'showDetail'])->name('attendance.detail');
 
     Route::post('/attendance/detail/{attendance}', [CorrectionController::class, 'store'])->name('correction.store');
-    Route::get('/stamp_correction_request/list', [CorrectionController::class, 'showList'])->name('correction.list');
+    Route::get('/stamp_correction_request/list', [CorrectionController::class, 'index'])->name('correction.list');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.list');
-    Route::get('attendance/{id}', [AttendanceController::class, 'showDetail'])->name('admin.attendance.detail');
+    Route::get('attendance/{id}', [AttendanceDetailController::class, 'showDetail'])->name('admin.attendance.detail');
     Route::put('attendance/{id}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
+
     Route::get('/stamp_correction_request/list', [AdminCorrectionController::class, 'index'])->name('admin.correction.list');
     Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminCorrectionController::class, 'showApproveForm'])->name('admin.correction.approve');
     Route::put('/stamp_correction_request/approve/{id}', [AdminCorrectionController::class, 'update'])->name('admin.correction.approve.update');

@@ -49,7 +49,6 @@ class AdminCorrectionController extends Controller
         if ($request->correctionBreaks->isNotEmpty()) {
             $breakSource = $request->correctionBreaks;
         } else {
-            // 修正申請が存在する時点で、空は「休憩削除」を意味する
             $breakSource = collect();
         }
 

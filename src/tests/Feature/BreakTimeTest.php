@@ -39,7 +39,7 @@ class BreakTimeTest extends TestCase
                 'break_start' => now()->format('H:i'),
             ]);
 
-        $response->assertRedirect(route('attendance.index'));
+        $response->assertRedirect(route('attendance.show_form'));
 
         $this->assertDatabaseHas('breaks', [
             'attendance_id' => $attendance->id,

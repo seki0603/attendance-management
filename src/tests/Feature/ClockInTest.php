@@ -30,7 +30,7 @@ class ClockInTest extends TestCase
             'clock_in' => now()->format('H:i'),
             ]);
 
-        $response->assertRedirect(route('attendance.index'));
+        $response->assertRedirect(route('attendance.show_form'));
 
         $this->assertDatabaseHas('attendances', [
             'user_id' => $user->id,

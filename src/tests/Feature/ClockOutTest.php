@@ -36,7 +36,7 @@ class ClockOutTest extends TestCase
             'clock_out' => now()->format('H:i'),
         ]);
 
-        $response->assertRedirect(route('attendance.index'));
+        $response->assertRedirect(route('attendance.show_form'));
 
         $this->assertNotNull(Attendance::first()->clock_out);
 

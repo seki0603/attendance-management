@@ -9,16 +9,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 
 class FortifyServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        $this->app->bind(
-            \Laravel\Fortify\Http\Requests\LoginRequest::class,
-            \App\Http\Requests\LoginRequest::class
-        );
+        $this->app->bind(FortifyLoginRequest::class, LoginRequest::class);
         Fortify::username('email');
 
         Fortify::authenticateUsing(function (LoginRequest $request) {

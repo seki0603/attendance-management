@@ -12,7 +12,7 @@ class AttendanceController extends Controller
 {
     private const WEEKDAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
 
-    public function index()
+    public function showForm()
     {
         $user = auth()->user();
         $now = now();
@@ -27,7 +27,7 @@ class AttendanceController extends Controller
             $attendanceStatus = '勤務外';
         } elseif ($attendance->clock_out) {
             $attendanceStatus = '退勤済';
-        } elseif (session('on_break')) {
+        } elseif (session('is_on_break')) {
             $attendanceStatus = '休憩中';
         } elseif ($attendance->clock_in && !$attendance->clock_out) {
             $attendanceStatus = '出勤中';
@@ -35,7 +35,7 @@ class AttendanceController extends Controller
             $attendanceStatus = '勤務外';
         }
 
-        // 表示用データをまとめる
+        // 表示用データ生成
         $viewData = [
             'status' => $attendanceStatus,
             'date' => $now->format('Y年m月d日'),
@@ -51,26 +51,28 @@ class AttendanceController extends Controller
         $user = auth()->user();
         $today = now()->toDateString();
 
-        // 出勤処理
         $attendance = Attendance::firstOrCreate([
             'user_id' => $user->id,
             'work_date' => $today,
         ]);
 
+        // 出勤処理
         if ($request->has('clock_in')) {
             $attendance->update(['clock_in' => now()]);
+            return redirect()->route('attendance.show_form');
         }
 
-        // 休憩入処理
+        // 休憩開始処理
         if ($request->has('break_start')) {
             BreakTime::create([
                 'attendance_id' => $attendance->id,
                 'break_start' => now(),
             ]);
-            session(['on_break' => true]);
+            session(['is_on_break' => true]);
+            return redirect()->route('attendance.show_form');
         }
 
-        // 休憩戻処理
+        // 休憩終了処理
         if ($request->has('break_end')) {
             $break = BreakTime::where('attendance_id', $attendance->id)
                 ->whereNull('break_end')
@@ -81,15 +83,15 @@ class AttendanceController extends Controller
                 $break->update(['break_end' => now()]);
             }
 
-            // 休憩のたびに合計を更新
             $totalBreak = BreakTime::where('attendance_id', $attendance->id)
                 ->whereNotNull('break_start')
                 ->whereNotNull('break_end')
                 ->get()
-                ->sum(fn($break) => $break->break_end->diffInMinutes($break->break_start));
+                ->sum(fn($b) => $b->break_end->diffInMinutes($b->break_start));
 
             $attendance->update(['total_break_time' => $totalBreak]);
-            session(['on_break' => false]);
+            session(['is_on_break' => false]);
+            return redirect()->route('attendance.show_form');
         }
 
         // 退勤処理
@@ -102,15 +104,15 @@ class AttendanceController extends Controller
 
             $attendance->update([
                 'total_work_time'  => $totalWork
-                ? max($totalWork - $attendance->total_break_time, 0)
-                : null,
+                    ? max($totalWork - $attendance->total_break_time, 0)
+                    : null,
             ]);
         }
 
-        return redirect()->route('attendance.index');
+        return redirect()->route('attendance.show_form');
     }
 
-    public function showList(Request $request)
+    public function index(Request $request)
     {
         $user = auth()->user();
 
@@ -159,67 +161,6 @@ class AttendanceController extends Controller
             'previousMonthUrl' => route('attendance.list', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')]),
             'nextMonthUrl' => route('attendance.list', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')]),
         ]);
-    }
-
-    public function showDetail($id)
-    {
-        $attendance = Attendance::with([
-            'user',
-            'breaks',
-            'correctionRequests.correctionBreaks',
-        ])->findOrFail($id);
-
-        $pending = $attendance->correctionRequests
-            ->where('status', '承認待ち')
-            ->sortByDesc('id')
-            ->first();
-
-        $source = $pending ?? $attendance;
-
-        if ($pending) {
-            $breakSource = $pending->correctionBreaks->isNotEmpty()
-                ? $pending->correctionBreaks
-                : collect(); // 修正申請があれば空でも元のbreaksを表示しない
-        } else {
-            $breakSource = $attendance->breaks;
-        }
-
-        // 休憩の表示用データ
-        $formattedBreaks = collect($breakSource)->map(function ($break, $index) {
-            $index++;
-            return [
-                'break_start' => old('break_start_' . $index, $break->break_start ? Carbon::parse($break->break_start)->format('H:i') : ''),
-                'break_end'   => old('break_end_' . $index,   $break->break_end   ? Carbon::parse($break->break_end)->format('H:i')   : ''),
-            ];
-        })->values();
-
-        $nextIndex = $formattedBreaks->count() + 1;
-
-        $nextBreak = [
-            'break_start' => old('break_start_' . $nextIndex),
-            'break_end' => old('break_end_' . $nextIndex),
-        ];
-
-        $date = Carbon::parse($attendance->work_date);
-
-        $viewData = [
-            'name' => $attendance->user->full_name,
-            'year' => $date->format('Y年'),
-            'month_day' => $date->format('n月j日'),
-            'clock_in' => old('clock_in',  $source->clock_in ? Carbon::parse($source->clock_in)->format('H:i') : ''),
-            'clock_out' => old('clock_out', $source->clock_out ? Carbon::parse($source->clock_out)->format('H:i') : ''),
-            'breaks' => $formattedBreaks,
-            'next_break' => $nextBreak,
-            'next_index' => $nextIndex,
-            'note' => old('note', $pending?->note ?? ''),
-            'is_pending' => (bool) $pending,
-        ];
-
-        if (auth()->user()->role === 'admin') {
-            return view('admin.attendance-detail', compact('attendance', 'viewData'));
-        }
-
-        return view('attendance.detail', compact('attendance', 'viewData'));
     }
 
     private function formatMinutes($time): string

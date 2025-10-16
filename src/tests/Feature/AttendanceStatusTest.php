@@ -60,7 +60,7 @@ class AttendanceStatusTest extends TestCase
             'clock_out' => null,
         ]);
 
-        session(['on_break' => true]);
+        session(['is_on_break' => true]);
 
         $this->actingAs($user)
             ->get('/attendance')

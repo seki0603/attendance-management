@@ -20,6 +20,6 @@ class VerificationController extends Controller
     {
         $request->fulfill();
 
-        return redirect()->route('attendance.index');
+        return redirect()->route('attendance.show_form');
     }
 }
