@@ -19,6 +19,7 @@
 
     <main>
         <div class="content">
+            <h1 class="visually-hidden">メール認証</h1>
             <p class="content__text">登録していただいたメールアドレスに認証メールを送付しました。<br>
                 メース認証を完了してください。</p>
             <a href="{{ route('verification.site') }}">

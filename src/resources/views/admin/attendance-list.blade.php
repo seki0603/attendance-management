@@ -7,7 +7,7 @@
 @section('content')
     <div class="list__wrapper">
         <div class="list">
-            <h1 class="list__title">{{ $displayDate }}の勤怠一覧</h1>
+            <h1 class="list__title">{{ $displayDate }}の勤怠</h1>
 
             {{-- 日ページャー --}}
             <div class="list__day-wrapper">

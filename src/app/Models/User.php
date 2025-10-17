@@ -48,4 +48,10 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         return $name;
     }
+
+    // スペースなしの名前アクセサ
+    public function getDisplayNameAttribute(): string
+    {
+        return str_replace([' ', '　'], '', $this->name);
+    }
 }

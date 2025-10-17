@@ -22,7 +22,7 @@
 
         <table class="list-table">
             <tr class="list-table__row">
-                <th class="list-table__item-status">状態</th>
+                <th class="list-table__item-status--left">状態</th>
                 <th class="list-table__item-name">名前</th>
                 <th class="list-table__item">対象日時</th>
                 <th class="list-table__item">申請理由</th>
@@ -32,7 +32,7 @@
 
             @foreach ($records as $record)
             <tr class="list-table__row">
-                <td class="list-table__item-status">{{ $record['status'] }}</td>
+                <td class="list-table__item-status--left">{{ $record['status'] }}</td>
                 <td class="list-table__item-name">{{ $record['name'] }}</td>
                 <td class="list-table__item">{{ $record['work_date'] }}</td>
                 <td class="list-table__item">{{ $record['note'] }}</td>

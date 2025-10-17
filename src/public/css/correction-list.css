@@ -57,6 +57,11 @@
     text-align: center;
 }
 
+.list-table__item-status--left {
+    text-align: left;
+    padding-left: 50px;
+}
+
 .list-table__item-name {
     text-align: left;
     padding-left: 20px;

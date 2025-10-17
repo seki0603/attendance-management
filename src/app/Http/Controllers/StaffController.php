@@ -72,7 +72,7 @@ class StaffController extends Controller
         return view('admin.staff.attendance-list', [
             'records'          => $records,
             'displayMonth'     => $currentMonth->format('Y/m'),
-            'displayName'      => $user->name,
+            'displayName'      => $user->display_name,
             'previousMonthUrl' => route('admin.attendance.staff.list', [
                 'id' => $user->id,
                 'month' => $currentMonth->copy()->subMonth()->format('Y-m'),

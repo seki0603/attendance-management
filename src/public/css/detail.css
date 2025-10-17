@@ -64,6 +64,7 @@
     width: 10%;
     text-align: center;
 }
+
 .detail-table__input {
     width: 60%;
     font-size: 16px;
@@ -103,7 +104,7 @@
 .form__button {
     width: 100%;
     text-align: right;
-    margin: 30px 0;
+    margin: 50px 0;
 }
 
 .form__button-submit {

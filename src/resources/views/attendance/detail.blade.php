@@ -142,11 +142,14 @@
         };
 
         hideIfEmpty();
-
         input.addEventListener("focus", () => {
             input.style.color = "#000";
         });
-        input.addEventListener("input", hideIfEmpty);
+
+        input.addEventListener("input", () => {
+            input.style.color = "#000";
+        });
+
         input.addEventListener("blur", hideIfEmpty);
     });
 });
