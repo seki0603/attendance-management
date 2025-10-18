@@ -109,7 +109,7 @@
                     </td>
                     @else
                     <td class="detail-table__item" colspan="3">
-                        <textarea class="detail-table__textarea" name="note">{{ $viewData['note'] }}</textarea>
+                        <textarea class="detail-table__textarea" name="note">{{ old('note') }}</textarea>
                         @endif
                     </td>
                 </tr>
