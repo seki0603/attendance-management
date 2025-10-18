@@ -68,7 +68,8 @@ Password: password123
 4. CREATE DATABASE laravel_test;
 5. MySQL コンテナから抜ける
 6. docker-compose exec php bash
-7. vendor/bin/phpunit
+7. php artisan migrate --env=testing
+8. vendor/bin/phpunit
    <br>
 
 ## ER 図

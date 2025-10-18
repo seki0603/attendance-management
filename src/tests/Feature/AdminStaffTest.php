@@ -55,7 +55,7 @@ class AdminStaffTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.attendance.staff.list', ['id' => $user->id]));
 
         $response->assertStatus(200)
-            ->assertSee($user->name)
+            ->assertSee($user->display_name)
             ->assertSee('10/15')
             ->assertSee('09:00')
             ->assertSee('17:00');
