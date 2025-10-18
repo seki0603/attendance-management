@@ -25,7 +25,7 @@
                 <th class="list-table__item-status--left">状態</th>
                 <th class="list-table__item-name">名前</th>
                 <th class="list-table__item">対象日時</th>
-                <th class="list-table__item">申請理由</th>
+                <th class="list-table__item-note">申請理由</th>
                 <th class="list-table__item">申請日時</th>
                 <th class="list-table__item-detail">詳細</th>
             </tr>
@@ -35,7 +35,7 @@
                 <td class="list-table__item-status--left">{{ $record['status'] }}</td>
                 <td class="list-table__item-name">{{ $record['name'] }}</td>
                 <td class="list-table__item">{{ $record['work_date'] }}</td>
-                <td class="list-table__item">{{ $record['note'] }}</td>
+                <td class="list-table__item-note">{{ $record['note'] }}</td>
                 <td class="list-table__item">{{ $record['created_at'] }}</td>
                 <td class="list-table__item-detail">
                     <a class="list-table__link" href="{{ $record['detail_url'] }}">詳細</a>

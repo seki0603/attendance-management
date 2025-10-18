@@ -71,9 +71,15 @@
     text-align: left;
 }
 
+.list-table__item-note {
+    text-align: left;
+    padding-left: 10px;
+}
+
 .list-table__item-detail {
     width: 15%;
     text-align: left;
+    padding-left: 10px;
 }
 
 .list-table__link {
