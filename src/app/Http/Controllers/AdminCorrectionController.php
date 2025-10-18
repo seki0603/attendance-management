@@ -87,7 +87,8 @@ class AdminCorrectionController extends Controller
             ->findOrFail($id);
 
         DB::transaction(function () use ($request) {
-            $request->update(['status' => '承認済み']);
+            $request->status = '承認済み';
+            $request->save();
 
             $attendance = $request->attendance;
 
